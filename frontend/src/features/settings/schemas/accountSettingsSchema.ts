@@ -1,8 +1,11 @@
 import { z } from 'zod'
 
+const validPassword = z.string().min(8, 'Use at least 8 characters.')
+  .refine(value => new TextEncoder().encode(value).length <= 72, 'Use no more than 72 UTF-8 bytes.')
+
 export const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'Enter your current password.'),
-  newPassword: z.string().min(12, 'Use at least 12 characters.').max(128, 'Use no more than 128 characters.'),
+  currentPassword: validPassword,
+  newPassword: validPassword,
   confirmPassword: z.string().min(1, 'Confirm your new password.'),
 }).refine(data => data.newPassword === data.confirmPassword, { path: ['confirmPassword'], message: 'Passwords do not match.' })
   .refine(data => data.currentPassword !== data.newPassword, { path: ['newPassword'], message: 'Choose a different password.' })

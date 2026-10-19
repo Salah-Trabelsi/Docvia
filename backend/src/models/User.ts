@@ -6,6 +6,15 @@ export interface IUser {
   lastName: string
   email: string
   passwordHash: string
+  sessionVersion?: number
+  passwordResetTokenHash?: string
+  passwordResetExpiresAt?: Date
+  passwordResetRequestedAt?: Date
+  pendingEmail?: string
+  emailChangeTokenHash?: string
+  emailChangeExpiresAt?: Date
+  emailChangeRequestedAt?: Date
+  emailChangeSessionVersion?: number
   role: 'patient' | 'admin'
   phone?: string
   dateOfBirth?: Date
@@ -52,6 +61,15 @@ const userSchema = new Schema<IUser>(
       match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Enter a valid email address.'],
     },
     passwordHash: { type: String, required: true, select: false },
+    sessionVersion: { type: Number, default: 0, min: 0, select: false },
+    passwordResetTokenHash: { type: String, select: false },
+    passwordResetExpiresAt: { type: Date, select: false },
+    passwordResetRequestedAt: { type: Date, select: false },
+    pendingEmail: { type: String, trim: true, lowercase: true, maxlength: 254, match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, select: false },
+    emailChangeTokenHash: { type: String, select: false },
+    emailChangeExpiresAt: { type: Date, select: false },
+    emailChangeRequestedAt: { type: Date, select: false },
+    emailChangeSessionVersion: { type: Number, select: false },
     role: { type: String, enum: ['patient', 'admin'], default: 'patient' },
     phone: { type: String, trim: true, maxlength: 40 },
     dateOfBirth: {
@@ -79,6 +97,8 @@ const userSchema = new Schema<IUser>(
 )
 
 userSchema.index({ email: 1 }, { unique: true })
+userSchema.index({ emailChangeTokenHash: 1 }, { sparse: true })
+userSchema.index({ passwordResetTokenHash: 1 }, { sparse: true })
 userSchema.index({ emailVerificationTokenHash: 1 }, { sparse: true })
 
 export const User: Model<IUser> = model<IUser>('User', userSchema)

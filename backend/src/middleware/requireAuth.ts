@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import { validateEnv } from '../config/env.js'
+import { User } from '../models/User.js'
 
 // Reuse on cookie-authenticated mutations. Missing origins fail closed;
 // Referer is a fallback for clients that omit Origin.
@@ -27,9 +28,11 @@ export function protectCsrf(req: Request, res: Response, next: NextFunction) {
   next()
 }
 
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   res.set('Cache-Control', 'no-store')
   const { JWT_SECRET } = validateEnv()
+  let userId: string
+  let sessionVersion: number
   try {
     const cookie = req.headers.cookie?.split(';').map(value => value.trim())
       .find(value => value.startsWith('token='))
@@ -45,11 +48,29 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
       res.status(401).json({ message: 'Invalid session.' })
       return
     }
-    res.locals.userId = payload.sub
+    // Previously issued tokens have version zero until the first reset.
+    const version: unknown = payload.sessionVersion ?? 0
+    if (typeof version !== 'number' || !Number.isSafeInteger(version) || version < 0) {
+      res.status(401).json({ message: 'Invalid session.' })
+      return
+    }
+    userId = payload.sub
+    sessionVersion = version
   } catch {
     res.status(401).json({ message: 'Invalid or expired session.' })
     return
   }
 
+  try {
+    const user = await User.findById(userId).select('isActive +sessionVersion').lean()
+    if (!user || !user.isActive || (user.sessionVersion ?? 0) !== sessionVersion) {
+      res.status(401).json({ message: 'Session is no longer valid. Please sign in again.' })
+      return
+    }
+    res.locals.userId = userId
+  } catch {
+    res.status(500).json({ message: 'Unable to validate session. Please try again later.' })
+    return
+  }
   protectCsrf(req, res, next)
 }

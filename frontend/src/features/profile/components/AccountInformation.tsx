@@ -1,8 +1,9 @@
 import { CalendarDays, CircleUserRound, ShieldCheck, UserRound } from 'lucide-react'
 import { format, parseISO } from 'date-fns'
 import type { ProfileAccount } from '../types/account.types'
+import { ResendVerification } from '@/features/auth/components/ResendVerification'
 
-export function AccountInformation({ account }: { account: ProfileAccount }) {
+export function AccountInformation({ account, email }: { account: ProfileAccount; email: string }) {
   return (
     <section aria-labelledby="account-information-heading" className="min-w-0 rounded-xl bg-card p-5 shadow-card">
       <h2 id="account-information-heading" className="text-base font-semibold">Account Information</h2>
@@ -24,6 +25,7 @@ export function AccountInformation({ account }: { account: ProfileAccount }) {
           <dd className={`rounded-full px-2.5 py-1 ${account.status === 'Active' ? 'bg-success-subtle text-success' : 'bg-muted text-muted-foreground'}`}>{account.status}</dd>
         </div>
       </dl>
+      {!account.emailVerified && <div className="mt-5 border-t border-border pt-4"><ResendVerification email={email} /></div>}
     </section>
   )
 }

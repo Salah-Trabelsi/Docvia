@@ -21,14 +21,14 @@ export async function login(req: Request, res: Response) {
   }
 
   try {
-    const user = await User.findOne({ email: parsed.data.email }).select('+passwordHash')
+    const user = await User.findOne({ email: parsed.data.email }).select('+passwordHash +sessionVersion')
     if (!user || !await bcrypt.compare(parsed.data.password, user.passwordHash) || !user.isActive) {
       res.status(401).json({ message: 'Invalid credentials or account unavailable.' })
       return
     }
 
     const { JWT_SECRET } = validateEnv()
-    const token = jwt.sign({}, JWT_SECRET, {
+    const token = jwt.sign({ sessionVersion: user.sessionVersion ?? 0 }, JWT_SECRET, {
       algorithm: 'HS256',
       subject: user._id.toString(),
       expiresIn: '7d',

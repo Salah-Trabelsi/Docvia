@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { FieldError } from '@/components/ui/field'
 import { AuthLayout } from '../components/AuthLayout'
+import { ResendVerification } from '../components/ResendVerification'
 
 interface AuthValues {
   firstName: string
@@ -23,7 +24,7 @@ function AuthForm({ registration = false }: { registration?: boolean }) {
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const routeState = location.state as { from?: unknown; registered?: boolean } | null
+  const routeState = location.state as { from?: unknown; registered?: boolean; passwordChanged?: boolean; accountDeleted?: boolean } | null
   const from = typeof routeState?.from === 'string' && routeState.from.startsWith('/')
     && !routeState.from.startsWith('//') && !routeState.from.includes('\\')
     && !/^\/(login|register|forgot-password)(?:[/?#]|$)/.test(routeState.from)
@@ -42,7 +43,9 @@ function AuthForm({ registration = false }: { registration?: boolean }) {
         </p>
       </div>
 
-      {!registration && routeState?.registered && <p role="status" className="mb-5 rounded-lg bg-success-subtle p-3 text-sm text-success">Account created. Please sign in.</p>}
+      {!registration && routeState?.registered && <p role="status" className="mb-5 rounded-lg bg-success-subtle p-3 text-sm text-success">Account created. Please check your email for a verification link. You can sign in now without waiting for verification.</p>}
+      {!registration && routeState?.passwordChanged && <p role="status" className="mb-5 rounded-lg bg-success-subtle p-3 text-sm text-success">Password changed successfully. Please sign in with your new password.</p>}
+      {!registration && routeState?.accountDeleted && <p role="status" className="mb-5 rounded-lg bg-success-subtle p-3 text-sm text-success">Your account has been permanently deleted.</p>}
       <form noValidate aria-busy={isSubmitting} className="space-y-5" onSubmit={handleSubmit(async values => {
         setNotice('')
         try {
@@ -106,6 +109,10 @@ function AuthForm({ registration = false }: { registration?: boolean }) {
         {registration ? 'Already have an account?' : "Don't have an account?"}{' '}
         <Link to={registration ? '/login' : '/register'} state={{ from }} className="ml-1 font-medium text-brand-foreground hover:underline">{registration ? 'Sign in' : 'Register'}</Link>
       </p>
+      {!registration && <details className="mt-5 text-sm">
+        <summary className="cursor-pointer text-brand-foreground">Need a verification email?</summary>
+        <div className="mt-4"><ResendVerification /></div>
+      </details>}
     </AuthLayout>
   )
 }
@@ -118,14 +125,3 @@ export function RegisterPage() {
   return <AuthForm key="register" registration />
 }
 
-export function ForgotPasswordPage() {
-  return (
-    <AuthLayout>
-      <div className="space-y-4 text-center">
-        <h1 className="text-2xl font-semibold">Forgot password?</h1>
-        <p className="text-sm leading-relaxed text-muted-foreground">Password recovery is not available yet. No reset email can be sent at this stage.</p>
-        <Link to="/login" className="inline-block py-2 font-medium text-brand-foreground hover:underline">Back to sign in</Link>
-      </div>
-    </AuthLayout>
-  )
-}

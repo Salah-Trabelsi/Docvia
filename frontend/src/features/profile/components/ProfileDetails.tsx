@@ -130,7 +130,7 @@ export function ProfileDetails({ profile }: { profile: UserProfile }) {
         onCancel={() => { reset(formValues(profile)); setEditing(false); setError(''); setMessage('') }}
         onSave={() => { void saveChanges() }} message={message} error={error} />
       <div className="flex min-w-0 flex-col gap-5">
-        <AccountInformation account={{
+        <AccountInformation email={profile.email} account={{
           accountType: profile.role === 'admin' ? 'Admin' : 'Patient',
           memberSince: profile.createdAt,
           emailVerified: profile.isEmailVerified,
