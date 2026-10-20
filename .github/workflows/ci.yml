@@ -91,7 +91,6 @@ jobs:
       - name: Typecheck unit tests
         run: npm run typecheck:tests
 
-      # Direct controller/middleware tests: no database or HTTP server.
       - name: Backend unit tests
         run: npm test
 

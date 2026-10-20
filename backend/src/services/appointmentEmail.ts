@@ -356,7 +356,7 @@ export function startAppointmentEmailWorker() {
   const env = validateEnv();
   if (!env.APPOINTMENT_EMAIL_WORKER_ENABLED) {
     console.info("Appointment email worker paused; events remain queued.");
-    return () => {};
+    return () => Promise.resolve();
   }
   const resend = env.RESEND_API_KEY?.trim()
     ? new Resend(env.RESEND_API_KEY)
@@ -366,6 +366,7 @@ export function startAppointmentEmailWorker() {
   if (resend) Object.defineProperty(resend, "logError", { value: () => {} });
   let running = false;
   let stopped = false;
+  let inFlight: Promise<void> = Promise.resolve();
   const tick = async () => {
     if (running || stopped) return;
     running = true;
@@ -387,12 +388,13 @@ export function startAppointmentEmailWorker() {
     }
   };
   const timer = setInterval(() => {
-    void tick();
+    if (!running && !stopped) inFlight = tick();
   }, 15_000);
   timer.unref();
-  void tick();
+  inFlight = tick();
   return () => {
     stopped = true;
     clearInterval(timer);
+    return inFlight;
   };
 }

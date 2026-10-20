@@ -14,6 +14,17 @@ import { serveFrontend } from "./middleware/frontendAssets.js";
 export const env = validateEnv();
 
 const app = express();
+app.disable("x-powered-by");
+app.use((_req, res, next) => {
+  res.set({
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "no-referrer",
+    "Content-Security-Policy":
+      "frame-ancestors 'none'; base-uri 'self'; object-src 'none'",
+  });
+  next();
+});
 // Default: ignore forwarded client addresses. Configure only verified ingress
 // proxy networks; never assume a hop count or trust arbitrary X-Forwarded-For.
 app.set(

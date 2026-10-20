@@ -10,6 +10,11 @@ export function errorHandler(
     res.status(400).json({ message: "Invalid JSON request body." });
     return;
   }
-  console.error(err);
+  // Raw errors can contain connection details, request data or provider payloads.
+  console.error("Unhandled request failure.");
+  if (res.headersSent) {
+    res.end();
+    return;
+  }
   res.status(500).json({ message: "Internal server error" });
 }

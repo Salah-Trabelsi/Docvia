@@ -19,8 +19,8 @@ import {
 } from "../middleware/abuseProtection.js";
 
 const router = Router();
-router.post("/register", registrationRateLimit, register);
-router.post("/login", loginRateLimit, login);
+router.post("/register", registrationRateLimit, protectCsrf, register);
+router.post("/login", loginRateLimit, protectCsrf, login);
 router.get("/me", requireAuth, getMe);
 router.post("/logout", protectCsrf, logout);
 router.post("/verify-email", verificationRateLimit(), protectCsrf, verifyEmail);

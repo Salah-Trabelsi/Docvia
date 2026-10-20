@@ -26,7 +26,6 @@ export function response(userId?: string) {
   return { ...stub, res: stub as unknown as Response };
 }
 
-// Minimal awaitable query surface, not an in-memory database emulator.
 export function query<T>(value: T) {
   const result = Object.assign(Promise.resolve(value), {
     select: vi.fn(),
