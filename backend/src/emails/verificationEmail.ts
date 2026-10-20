@@ -1,21 +1,26 @@
 function escapeHtml(value: string) {
-  return value.replace(/[&<>"']/g, character => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;',
-  })[character]!)
+  return value.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[character]!,
+  );
 }
 
 export function verificationEmail(firstName: string, url: string) {
-  const name = escapeHtml(firstName)
-  const link = escapeHtml(url)
+  const name = escapeHtml(firstName);
+  const link = escapeHtml(url);
 
-  const logoUrl = 'https://res.cloudinary.com/dziigmgig/image/upload/v1792351119/docvia-logo.png'
+  const logoUrl =
+    "https://res.cloudinary.com/dziigmgig/image/upload/v1792351119/docvia-logo.png";
 
   return {
-    subject: 'Verify your Docvia email address',
+    subject: "Verify your Docvia email address",
     text:
       `Welcome to Docvia, ${firstName}!\n\n` +
       `Please verify your email address:\n${url}\n\n` +
@@ -124,5 +129,5 @@ export function verificationEmail(firstName: string, url: string) {
   </body>
 </html>
     `,
-  }
+  };
 }

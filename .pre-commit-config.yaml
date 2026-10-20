@@ -1,0 +1,48 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-json
+        exclude: (^|/)tsconfig[^/]*\.json$
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: frontend-prettier
+        name: Frontend Prettier
+        entry: npm run format:check --prefix frontend
+        language: system
+        files: ^frontend/
+        pass_filenames: false
+
+      - id: frontend-eslint
+        name: Frontend ESLint
+        entry: npm run lint --prefix frontend
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false
+
+      - id: frontend-typecheck
+        name: Frontend TypeScript
+        entry: npm run typecheck --prefix frontend
+        language: system
+        files: ^frontend/.*\.(ts|tsx)$
+        pass_filenames: false
+
+      - id: backend-prettier
+        name: Backend Prettier
+        entry: npm run format:check --prefix backend
+        language: system
+        files: ^backend/
+        pass_filenames: false
+
+      - id: backend-typecheck
+        name: Backend TypeScript
+        entry: npm run typecheck --prefix backend
+        language: system
+        files: ^backend/.*\.ts$
+        pass_filenames: false

@@ -1,43 +1,48 @@
-import { Schema, model, type Model, type Types } from 'mongoose'
+import { Schema, model, type Model, type Types } from "mongoose";
 
 export interface IDoctor {
-  _id?: Types.ObjectId
-  slug?: string
-  firstName: string
-  lastName: string
-  specialty: string
-  description?: string
-  imageUrl?: string
-  tags?: string[]
-  languages?: string[]
-  consultationTypes?: string[]
-  ratingAverage?: number
-  ratingCount?: number
-  pricePerHour: number
-  currency?: string
-  yearsOfExperience?: number
-  recoveredPatients?: number
-  inCarePatients?: number
+  _id?: Types.ObjectId;
+  slug?: string;
+  firstName: string;
+  lastName: string;
+  specialty: string;
+  description?: string;
+  imageUrl?: string;
+  tags?: string[];
+  languages?: string[];
+  consultationTypes?: string[];
+  ratingAverage?: number;
+  ratingCount?: number;
+  pricePerHour: number;
+  currency?: string;
+  yearsOfExperience?: number;
+  recoveredPatients?: number;
+  inCarePatients?: number;
   clinic?: {
-    name?: string
-    streetAddress?: string
-    city?: string
-    postalCode?: string
-    country?: string
-    phone?: string
-    imageUrl?: string
-  }
+    name?: string;
+    streetAddress?: string;
+    city?: string;
+    postalCode?: string;
+    country?: string;
+    phone?: string;
+    imageUrl?: string;
+  };
   location?: {
-    type: 'Point'
-    coordinates: [number, number]
-  }
-  workingHours?: { dayOfWeek: number; startTime: string; endTime: string }[]
-  timeZone?: string
-  consultationDurationMinutes?: number
-  acceptingNewPatients?: boolean
-  isActive?: boolean
-  createdAt?: Date
-  updatedAt?: Date
+    type: "Point";
+    coordinates: [number, number];
+  };
+  workingHours?: { dayOfWeek: number; startTime: string; endTime: string }[];
+  dateExceptions?: {
+    date: string;
+    closed: boolean;
+    hours: { startTime: string; endTime: string }[];
+  }[];
+  timeZone?: string;
+  consultationDurationMinutes?: number;
+  acceptingNewPatients?: boolean;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const doctorSchema = new Schema<IDoctor>(
@@ -54,7 +59,7 @@ const doctorSchema = new Schema<IDoctor>(
     ratingAverage: { type: Number, default: 0, min: 0, max: 5 },
     ratingCount: { type: Number, default: 0, min: 0 },
     pricePerHour: { type: Number, required: true, min: 0 },
-    currency: { type: String, default: 'EUR', enum: ['EUR', 'USD', 'GBP'] },
+    currency: { type: String, default: "EUR", enum: ["EUR", "USD", "GBP"] },
     yearsOfExperience: { type: Number, default: 0, min: 0 },
     recoveredPatients: { type: Number, default: 0, min: 0 },
     inCarePatients: { type: Number, default: 0, min: 0 },
@@ -70,33 +75,51 @@ const doctorSchema = new Schema<IDoctor>(
     location: {
       type: {
         type: String,
-        enum: ['Point'],
+        enum: ["Point"],
       },
       coordinates: {
         type: [Number],
         validate: {
           validator: (v: number[]) => !v || v.length === 2,
-          message: 'coordinates must be [longitude, latitude]',
+          message: "coordinates must be [longitude, latitude]",
         },
       },
     },
     workingHours: [
       {
-        dayOfWeek: { type: Number, required: true, min: 0, max: 6 },
+        dayOfWeek: {
+          type: Number,
+          required: true,
+          min: 1,
+          max: 6,
+          validate: Number.isInteger,
+        },
         startTime: { type: String, required: true },
         endTime: { type: String, required: true },
       },
     ],
-    timeZone: { type: String, default: 'Europe/Berlin' },
+    dateExceptions: [
+      {
+        date: { type: String, required: true, match: /^\d{4}-\d{2}-\d{2}$/ },
+        closed: { type: Boolean, default: true },
+        hours: [
+          {
+            startTime: { type: String, required: true },
+            endTime: { type: String, required: true },
+          },
+        ],
+      },
+    ],
+    timeZone: { type: String, default: "Europe/Berlin" },
     consultationDurationMinutes: { type: Number, default: 30, min: 1 },
     acceptingNewPatients: { type: Boolean, default: true },
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true, collection: 'doctors' }
-)
+  { timestamps: true, collection: "doctors" },
+);
 
-doctorSchema.index({ location: '2dsphere' })
+doctorSchema.index({ location: "2dsphere" });
 
-export const Doctor: Model<IDoctor> = model<IDoctor>('Doctor', doctorSchema)
-export type DoctorDocument = IDoctor & { _id: Types.ObjectId }
-export default Doctor
+export const Doctor: Model<IDoctor> = model<IDoctor>("Doctor", doctorSchema);
+export type DoctorDocument = IDoctor & { _id: Types.ObjectId };
+export default Doctor;

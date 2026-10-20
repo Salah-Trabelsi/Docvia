@@ -1,13 +1,20 @@
 function escapeHtml(value: string) {
-  return value.replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]!)
+  return value.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        character
+      ]!,
+  );
 }
 
 export function passwordResetEmail(firstName: string, url: string) {
-  const name = escapeHtml(firstName)
-  const link = escapeHtml(url)
-  const logo = 'https://res.cloudinary.com/dziigmgig/image/upload/v1792351119/docvia-logo.png'
+  const name = escapeHtml(firstName);
+  const link = escapeHtml(url);
+  const logo =
+    "https://res.cloudinary.com/dziigmgig/image/upload/v1792351119/docvia-logo.png";
   return {
-    subject: 'Reset your Docvia password',
+    subject: "Reset your Docvia password",
     text: `Hello ${firstName},\n\nWe received a request to reset your Docvia password.\n${url}\n\nThis link expires in 30 minutes and can only be used once. Resetting your password signs you out of existing sessions. If you did not request this, ignore this email; your password will not change.`,
     html: `<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Reset your Docvia password</title></head>
 <body style="margin:0;background:#F8F4EE;font-family:Arial,Helvetica,sans-serif;color:#172433;">
@@ -22,5 +29,5 @@ export function passwordResetEmail(firstName: string, url: string) {
 <p style="word-break:break-all;overflow-wrap:anywhere;font-size:13px;line-height:1.7;"><a href="${link}" style="color:#A34B18;">${link}</a></p>
 <p style="font-size:13px;line-height:1.7;color:#6B7280;">If you did not request this, ignore this email. Your password will not change.</p>
 </td></tr></table></td></tr></table></body></html>`,
-  }
+  };
 }
