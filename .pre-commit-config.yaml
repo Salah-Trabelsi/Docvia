@@ -40,6 +40,13 @@ repos:
         files: ^backend/
         pass_filenames: false
 
+      - id: backend-eslint
+        name: Backend ESLint
+        entry: npm run lint --prefix backend
+        language: system
+        files: ^backend/.*\.(ts|js|mjs|cjs)$
+        pass_filenames: false
+
       - id: backend-typecheck
         name: Backend TypeScript
         entry: npm run typecheck --prefix backend
