@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { secureSessionCookie } from "../config/sessionCookie.js";
 import { User } from "../models/User.js";
 
 export async function getMe(_req: Request, res: Response) {
@@ -30,7 +31,7 @@ export function logout(_req: Request, res: Response) {
   res.clearCookie("token", {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: secureSessionCookie(),
     path: "/",
   });
   res.set("Cache-Control", "no-store");

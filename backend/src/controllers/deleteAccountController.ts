@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { secureSessionCookie } from "../config/sessionCookie.js";
 import bcrypt from "bcrypt";
 import { z } from "zod";
 import mongoose from "mongoose";
@@ -116,7 +117,7 @@ export async function deleteAccount(req: Request, res: Response) {
     res.clearCookie("token", {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: secureSessionCookie(),
       path: "/",
     });
     if (avatarId && cloudinary) {

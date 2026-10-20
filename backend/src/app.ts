@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoutes.js";
 import appointmentRoutes from "./routes/appointmentRoutes.js";
 
 import notificationRoutes from "./routes/notificationRoutes.js";
+import { serveFrontend } from "./middleware/frontendAssets.js";
 
 export const env = validateEnv();
 
@@ -27,6 +28,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/notifications", notificationRoutes);
+if (env.SERVE_FRONTEND) serveFrontend(app);
 app.use(errorHandler);
 
 export default app;

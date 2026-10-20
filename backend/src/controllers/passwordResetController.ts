@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { secureSessionCookie } from "../config/sessionCookie.js";
 import bcrypt from "bcrypt";
 import { z } from "zod";
 import { User } from "../models/User.js";
@@ -81,7 +82,7 @@ export async function resetPassword(req: Request, res: Response) {
     res.clearCookie("token", {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: secureSessionCookie(),
       path: "/",
     });
     res.status(200).json({

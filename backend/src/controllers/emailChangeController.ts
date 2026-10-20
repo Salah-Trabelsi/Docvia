@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { secureSessionCookie } from "../config/sessionCookie.js";
 import { createHash, randomBytes } from "node:crypto";
 import bcrypt from "bcrypt";
 import { Resend } from "resend";
@@ -189,7 +190,7 @@ export async function confirmEmailChange(req: Request, res: Response) {
     res.clearCookie("token", {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: secureSessionCookie(),
       path: "/",
     });
     // Notification failures must not report failure after the email was committed.

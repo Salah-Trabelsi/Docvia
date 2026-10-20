@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { secureSessionCookie } from "../config/sessionCookie.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
@@ -58,7 +59,7 @@ export async function login(req: Request, res: Response) {
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: secureSessionCookie(),
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });

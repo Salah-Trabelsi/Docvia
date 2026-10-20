@@ -41,6 +41,7 @@ export function RescheduleAppointmentDialog({
 }) {
   const [original] = useState(() => appointment);
   const [confirming, setConfirming] = useState(false);
+  const [rescheduled, setRescheduled] = useState<PatientAppointment>();
   const submitting = useRef(false);
   const client = useQueryClient();
   const { user } = useAuth();
@@ -62,6 +63,9 @@ export function RescheduleAppointmentDialog({
       rescheduleAppointment(original._id, startsAt),
     retry: false,
     onSuccess: async (updated) => {
+      // The API has committed the change. Render success before cache writes
+      // change the appointment prop while this async callback is still pending.
+      setRescheduled(updated);
       await client.cancelQueries({ queryKey: appointmentKeys.all });
       if (user) updateAppointmentCache(client, user._id, updated);
       await Promise.all([
@@ -108,7 +112,7 @@ export function RescheduleAppointmentDialog({
     >
       <DialogHeader>
         <DialogTitle className="pr-8">
-          {mutation.isSuccess
+          {rescheduled
             ? "Appointment rescheduled"
             : confirming
               ? "Confirm rescheduling"
@@ -120,13 +124,13 @@ export function RescheduleAppointmentDialog({
           Europe/Berlin.
         </DialogDescription>
       </DialogHeader>
-      {mutation.isSuccess ? (
+      {rescheduled ? (
         <>
           <p role="status" className="font-medium">
             Your appointment has been rescheduled.
           </p>
           <p className="rounded-xl bg-accent/60 p-4 text-sm">
-            {appointmentTime(mutation.data.startsAt, mutation.data.endsAt)}
+            {appointmentTime(rescheduled.startsAt, rescheduled.endsAt)}
           </p>
           <DialogFooter>
             <Button onClick={onClose}>Done</Button>
@@ -145,7 +149,7 @@ export function RescheduleAppointmentDialog({
               The doctor's availability is unavailable. Please try again later.
             </FieldError>
           )}
-          {!eligible && (
+          {!mutation.isPending && !eligible && (
             <FieldError>
               Only confirmed future appointments that have not changed can be
               rescheduled. Close this dialog to view the latest appointment.
@@ -159,7 +163,7 @@ export function RescheduleAppointmentDialog({
                   ? appointmentTime(slot.startAt, slot.endAt)
                   : "The selected slot is no longer available."}
               </p>
-              {!selection.validSelection && (
+              {!mutation.isPending && !selection.validSelection && (
                 <p role="alert" className="mt-2 text-destructive">
                   Please go back and choose an available date and time.
                 </p>
