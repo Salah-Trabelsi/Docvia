@@ -7,7 +7,6 @@ import { DoctorMapPreview } from "./DoctorMapPreview";
 import type { Doctor } from "../types/doctor.types";
 import { cityCoordinates, useLocationStore } from "@/stores/locationStore";
 
-// MapLibre 6 uses a separate worker; let Vite serve and bundle it locally.
 setWorkerUrl(workerUrl);
 
 export function DoctorsMap({ doctors }: { doctors: Doctor[] }) {

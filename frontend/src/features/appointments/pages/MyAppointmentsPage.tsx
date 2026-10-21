@@ -55,8 +55,6 @@ export function MyAppointmentsPage() {
             height="724"
           />
         </svg>
-        {/* Fit the complete desktop artwork without cropping or distortion.
-            Blend its empty left edge into the continuous cream background. */}
         <svg
           aria-hidden="true"
           focusable="false"

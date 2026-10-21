@@ -1,7 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { doctorKeys } from "./doctorKeys";
 
-/** Omit slug to refresh all doctors, as cancellation already does. */
 export async function invalidateDoctorAvailability(
   client: QueryClient,
   slug?: string,

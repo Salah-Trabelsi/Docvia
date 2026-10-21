@@ -1,7 +1,5 @@
 import { replace, type LoaderFunctionArgs } from "react-router";
 
-// Single-use, tab-memory-only handoff. Never put the token in router data,
-// React state, query keys, mutation variables, or browser storage.
 let pendingToken: string | undefined;
 let expiresAt = 0;
 let expiryTimer: ReturnType<typeof setTimeout> | undefined;

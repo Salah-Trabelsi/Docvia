@@ -32,7 +32,6 @@ async function startConfirmation(token: string) {
       } finally {
         token = "";
       }
-      // Preserve only this operation's safe results and the active auth observer.
       await queryClient.cancelQueries({
         predicate: (query) => query.queryKey[0] !== "email-change-confirmation",
       });

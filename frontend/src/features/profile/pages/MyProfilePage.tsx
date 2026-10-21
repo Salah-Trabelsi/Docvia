@@ -32,7 +32,6 @@ export function MyProfilePage() {
             }}
           />
         </svg>
-        {/* Tablet fills the banner with the artwork rather than letterboxing it. */}
         <svg
           aria-hidden="true"
           focusable="false"
@@ -46,7 +45,6 @@ export function MyProfilePage() {
             height="471"
           />
         </svg>
-        {/* On phones, keep the portrait below the text and extend only empty background. */}
         <svg
           aria-hidden="true"
           focusable="false"

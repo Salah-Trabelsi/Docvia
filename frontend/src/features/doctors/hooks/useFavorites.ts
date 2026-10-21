@@ -32,8 +32,6 @@ export function useDoctorFavorite(doctorId?: string) {
     mutationFn: (add: boolean) => updateFavorite(doctorId!, add),
     retry: false,
     onSuccess: async () => {
-      // Refetch the canonical list rather than overwriting it with responses
-      // from potentially concurrent changes in another tab.
       const queryKey = favoritesKey(user?._id ?? "");
       await client.cancelQueries({ queryKey, exact: true });
       await client.invalidateQueries({ queryKey, exact: true });

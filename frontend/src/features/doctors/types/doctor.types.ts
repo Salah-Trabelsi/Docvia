@@ -12,7 +12,6 @@ export type SpecialtyFilter = "All Specialties" | Specialty;
 
 export interface Doctor {
   _id: string;
-  /** Real API document ID; _id remains the legacy navigation key. */
   mongoId?: string;
   slug?: string;
   firstName: string;
@@ -42,7 +41,7 @@ export interface Doctor {
     imageUrl?: string;
     location: {
       type: "Point";
-      coordinates: [number, number]; // longitude, latitude
+      coordinates: [number, number];
     };
   };
 }

@@ -6,8 +6,6 @@ import { queryClient } from "@/lib/queryClient";
 export type VerificationResult =
   "success" | "invalid" | "network-error" | "server-error";
 
-// The query retains only a fingerprint and a safe result, never the token or
-// Axios error (which can contain the original request body).
 async function startVerification(token: string) {
   const digest = await crypto.subtle.digest(
     "SHA-256",

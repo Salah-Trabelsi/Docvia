@@ -63,8 +63,6 @@ export function RescheduleAppointmentDialog({
       rescheduleAppointment(original._id, startsAt),
     retry: false,
     onSuccess: async (updated) => {
-      // The API has committed the change. Render success before cache writes
-      // change the appointment prop while this async callback is still pending.
       setRescheduled(updated);
       await client.cancelQueries({ queryKey: appointmentKeys.all });
       if (user) updateAppointmentCache(client, user._id, updated);

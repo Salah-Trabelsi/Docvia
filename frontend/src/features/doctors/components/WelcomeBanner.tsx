@@ -4,8 +4,6 @@ export function WelcomeBanner() {
       aria-labelledby="welcome-heading"
       className="relative isolate flex min-h-48 items-center overflow-hidden rounded-xl sm:min-h-44 lg:min-h-[170px]"
     >
-      {/* Exclude the asset's white frame. Extend only its empty background;
-          keep the doctor proportional and fit her complete upper body vertically. */}
       <svg
         aria-hidden="true"
         focusable="false"

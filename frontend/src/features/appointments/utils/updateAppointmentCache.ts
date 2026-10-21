@@ -1,7 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { appointmentKeys, type PatientAppointment } from "@/api/appointments";
 
-/** Called only after server success and cancellation of stale appointment reads. */
 export function updateAppointmentCache(
   client: QueryClient,
   userId: string,

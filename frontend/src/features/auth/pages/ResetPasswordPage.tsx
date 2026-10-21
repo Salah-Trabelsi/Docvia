@@ -35,7 +35,6 @@ export function ResetPasswordPage() {
     mode: "onTouched",
   });
   const mutation = useMutation<ResetPasswordResult, Error, void>({
-    // No sensitive mutation variables: consume the memory handoff only here.
     mutationFn: async () => {
       const token = consumeResetToken();
       const password = getValues("password");
