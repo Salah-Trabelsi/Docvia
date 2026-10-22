@@ -91,7 +91,7 @@ export function Header() {
         <>
           <div
             ref={searchRef}
-            className="relative order-last w-full min-w-0 lg:order-none lg:flex-1"
+            className="relative order-last hidden w-full min-w-0 sm:block lg:order-none lg:flex-1"
             onBlur={(event) => {
               if (!event.currentTarget.contains(event.relatedTarget))
                 setSearchOpen(false);

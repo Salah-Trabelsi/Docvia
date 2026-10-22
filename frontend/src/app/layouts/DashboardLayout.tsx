@@ -13,7 +13,7 @@ export function DashboardLayout() {
         Skip to content
       </a>
       <Sidebar />
-      <div className="min-w-0 p-3 pb-[calc(10rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(10rem+env(safe-area-inset-bottom))] lg:ml-62 lg:p-4 lg:pl-5">
+      <div className="min-w-0 p-3 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-[calc(10rem+env(safe-area-inset-bottom))] lg:ml-62 lg:p-4 lg:pl-5">
         <Header />
         <main
           id="main-content"

@@ -47,6 +47,7 @@ export function AppointmentListCard({ appointment, now }: Props) {
     : appointment.status === "confirmed"
       ? "Past - Confirmed"
       : appointment.status;
+  const badgeClassName = `rounded-full px-3 py-1 text-xs capitalize ${upcoming ? "bg-sky-100 text-sky-700" : appointment.status === "completed" ? "bg-success-subtle text-success" : appointment.status === "cancelled" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`;
   return (
     <Dialog
       open={open}
@@ -60,12 +61,60 @@ export function AppointmentListCard({ appointment, now }: Props) {
           className="absolute inset-0 z-10 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           aria-label={`View appointment details for ${name}, ${format(start, "d MMMM yyyy")}`}
         />
-        <div className="flex w-fit min-w-20 flex-col items-center justify-center rounded-xl bg-accent/60 px-3 py-2 text-brand-foreground @min-[56rem]:w-full">
-          <span className="text-3xl font-semibold">{format(start, "dd")}</span>
-          <span className="text-xs">{format(start, "MMM yyyy")}</span>
-          <span className="mt-0.5 text-xs">{format(start, "EEE")}</span>
+        <div className="grid min-w-0 grid-cols-[3.5rem_minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3 sm:hidden">
+          <div className="row-span-2 flex size-14 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+            <AppointmentDoctorImage src={doctor?.imageUrl} name={name} />
+          </div>
+          <div className="min-w-0 break-words">
+            <h3 className="text-sm leading-snug font-semibold">{name}</h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {doctor?.specialty ?? "Specialty unavailable"}
+            </p>
+          </div>
+          <span
+            className={`${badgeClassName} max-w-24 justify-self-end text-center`}
+            title={appointment.status}
+          >
+            {badge}
+          </span>
+          <div className="relative col-span-2 col-start-2 min-w-0 space-y-2 pr-5 text-xs text-muted-foreground">
+            <p className="flex items-start gap-2">
+              <CalendarDays aria-hidden="true" className="size-4 shrink-0" />
+              <span>{format(start, "EEE, d MMM yyyy")}</span>
+            </p>
+            <p className="flex items-start gap-2">
+              <Clock3 aria-hidden="true" className="size-4 shrink-0" />
+              <span>
+                {format(start, "HH:mm")} – {format(end, "HH:mm")}
+                <span className="sr-only"> Europe/Berlin</span>
+              </span>
+            </p>
+            <p className="flex items-start gap-2">
+              <MapPin aria-hidden="true" className="size-4 shrink-0" />
+              <span className="min-w-0 break-words">
+                {doctor?.clinic?.name ?? "Practice unavailable"}
+                {" · "}
+                {doctor?.clinic?.city ?? "Location unavailable"}
+              </span>
+            </p>
+            <ChevronRight
+              aria-hidden="true"
+              className="absolute top-1/2 right-0 size-4 -translate-y-1/2 text-foreground"
+            />
+          </div>
         </div>
-        <div className="flex min-w-0 items-center gap-4">
+        <div className="hidden w-fit min-w-16 flex-col items-center justify-center justify-self-end rounded-xl bg-accent/60 px-2 py-1.5 text-brand-foreground sm:flex sm:min-w-20 sm:justify-self-start sm:px-3 sm:py-2 @min-[56rem]:w-full">
+          <span className="text-2xl font-semibold sm:text-3xl">
+            {format(start, "dd")}
+          </span>
+          <span className="text-[11px] sm:text-xs">
+            {format(start, "MMM yyyy")}
+          </span>
+          <span className="mt-0.5 text-[11px] sm:text-xs">
+            {format(start, "EEE")}
+          </span>
+        </div>
+        <div className="hidden min-w-0 items-center gap-4 sm:flex">
           <div className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
             <AppointmentDoctorImage src={doctor?.imageUrl} name={name} />
           </div>
@@ -77,10 +126,7 @@ export function AppointmentListCard({ appointment, now }: Props) {
                   {doctor?.specialty ?? "Specialty unavailable"}
                 </p>
               </div>
-              <span
-                className={`rounded-full px-3 py-1 text-xs capitalize ${upcoming ? "bg-sky-100 text-sky-700" : appointment.status === "completed" ? "bg-success-subtle text-success" : appointment.status === "cancelled" ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}
-                title={appointment.status}
-              >
+              <span className={badgeClassName} title={appointment.status}>
                 {badge}
               </span>
             </div>
@@ -96,8 +142,8 @@ export function AppointmentListCard({ appointment, now }: Props) {
             </div>
           </div>
         </div>
-        <div className="min-w-0 rounded-lg bg-background/70 p-3">
-          <div className="flex items-center gap-3">
+        <div className="min-w-0 border-t pt-3 sm:rounded-lg sm:border-0 sm:bg-background/70 sm:p-3">
+          <div className="hidden items-center gap-3 sm:flex">
             <Clock3 aria-hidden="true" className="size-5 shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-medium">
@@ -109,7 +155,7 @@ export function AppointmentListCard({ appointment, now }: Props) {
             </div>
             <ChevronRight aria-hidden="true" className="size-4" />
           </div>
-          <div className="relative z-20 mt-3 flex flex-wrap gap-2">
+          <div className="relative z-20 flex gap-2 sm:mt-3 sm:flex-wrap">
             {upcoming ? (
               <>
                 <DialogTrigger
@@ -138,7 +184,10 @@ export function AppointmentListCard({ appointment, now }: Props) {
               <DialogTrigger
                 onClick={() => setAction("details")}
                 render={
-                  <Button variant="outline" className="min-h-11 bg-card" />
+                  <Button
+                    variant="outline"
+                    className="min-h-11 w-full bg-card sm:w-auto"
+                  />
                 }
               >
                 View Details

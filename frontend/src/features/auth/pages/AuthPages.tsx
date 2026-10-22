@@ -53,10 +53,10 @@ function AuthForm({ registration = false }: { registration?: boolean }) {
         <h1 className="text-2xl font-semibold tracking-tight sm:text-[1.75rem]">
           {registration ? "Create your account" : "Welcome back"}
         </h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:text-base">
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground xs:text-base">
           {registration
             ? "Join Docvia to book appointments with trusted specialists."
-            : "Sign in to access your account and manage your appointments."}
+            : "Explore Docvia with your email. Your account and personal data can be permanently deleted at any time."}
         </p>
       </div>
 

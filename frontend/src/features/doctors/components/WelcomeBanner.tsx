@@ -68,7 +68,7 @@ export function WelcomeBanner() {
           }}
         />
       </svg>
-      <div className="w-full px-5 pt-5 pb-36 sm:w-[65%] sm:py-7 sm:pr-2 sm:pl-8 xl:pl-11">
+      <div className="w-full px-5 pt-5 pb-32 sm:w-[65%] sm:py-7 sm:pr-2 sm:pl-8 xl:pl-11">
         <h1
           id="welcome-heading"
           className="text-xl leading-tight font-semibold tracking-tight text-foreground min-[380px]:text-2xl sm:text-3xl"
