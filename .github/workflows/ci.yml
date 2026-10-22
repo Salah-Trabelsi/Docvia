@@ -185,7 +185,7 @@ jobs:
           NODE
       - name: Upload coverage report
         if: ${{ !cancelled() && hashFiles('frontend/coverage/coverage-summary.json') != '' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: frontend-coverage
           path: frontend/coverage/
@@ -231,7 +231,7 @@ jobs:
           NODE
       - name: Upload coverage report
         if: ${{ !cancelled() && hashFiles('backend/coverage/coverage-summary.json') != '' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: backend-coverage
           path: backend/coverage/
