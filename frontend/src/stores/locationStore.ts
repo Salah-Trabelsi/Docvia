@@ -6,6 +6,7 @@ export const cities = [
   "Rastatt",
   "Ettlingen",
   "Offenburg",
+  "Bühl",
 ] as const;
 export type City = (typeof cities)[number];
 export const locationOptions = ["All locations", ...cities] as const;
@@ -17,6 +18,7 @@ export const cityCoordinates: Record<City, [number, number]> = {
   Rastatt: [8.2044, 48.8572],
   Ettlingen: [8.4044, 48.9409],
   Offenburg: [7.9448, 48.4735],
+  Bühl: [8.1356, 48.6967],
 };
 
 interface LocationState {

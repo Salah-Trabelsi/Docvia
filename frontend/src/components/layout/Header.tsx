@@ -1,22 +1,23 @@
 import { doctorKeys } from "@/features/doctors/queries/doctorKeys";
 import { NotificationBell } from "@/features/notifications/components/NotificationBell";
-import { HeartPulse, LogOut, MapPin, Search, UserRound } from "lucide-react";
+import { HeartPulse, LogOut, UserRound } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link, NavLink, useLocation, useNavigate } from "react-router";
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router";
 import { useAuth } from "@/features/auth/useAuth";
 import { authErrorMessage } from "@/api/auth";
 import { getDoctors } from "@/api/doctors";
 import { getProfile } from "@/api/profile";
 import type { ApiDoctor } from "@/features/doctors/types/apiDoctor.types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { locationOptions, useLocationStore } from "@/stores/locationStore";
+import { DoctorSearchInput } from "@/features/doctors/components/DoctorSearchInput";
+import { DoctorLocationFilter } from "@/features/doctors/components/DoctorLocationFilter";
+import { matchesDoctorName } from "@/features/doctors/utils/filterDoctors";
 
 export function Header() {
   const { user, logout, isLoggingOut } = useAuth();
@@ -31,8 +32,9 @@ export function Header() {
   const [logoutError, setLogoutError] = useState("");
   const { pathname } = useLocation();
   const isOverview = pathname === "/";
-  const selectedCity = useLocationStore((state) => state.selectedCity);
-  const setSelectedCity = useLocationStore((state) => state.setSelectedCity);
+  const isDirectory = pathname === "/doctors";
+  const showDoctorFilters = isOverview || isDirectory;
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -47,9 +49,7 @@ export function Header() {
     enabled: isOverview,
   });
   const query = search.trim().replace(/\s+/g, " ").toLowerCase();
-  const matches = doctors.filter((doctor) =>
-    `${doctor.firstName} ${doctor.lastName}`.toLowerCase().includes(query),
-  );
+  const matches = doctors.filter((doctor) => matchesDoctorName(doctor, query));
   const showResults = isOverview && searchOpen && query.length > 0;
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export function Header() {
   return (
     <header
       className={
-        isOverview
+        showDoctorFilters
           ? "flex min-h-20 flex-wrap items-center gap-3 rounded-xl bg-card p-4 shadow-panel lg:flex-nowrap lg:gap-5"
           : "flex min-h-20 items-center gap-3 rounded-xl bg-card p-4 shadow-panel lg:justify-end lg:gap-0 lg:rounded-none lg:bg-transparent lg:p-0 lg:shadow-none"
       }
@@ -87,7 +87,7 @@ export function Header() {
         <span className="text-xl font-semibold tracking-tight">Docvia</span>
       </NavLink>
 
-      {isOverview && (
+      {showDoctorFilters && (
         <>
           <div
             ref={searchRef}
@@ -103,24 +103,27 @@ export function Header() {
               }
             }}
           >
-            <Search
-              aria-hidden="true"
-              className="pointer-events-none absolute top-3.5 left-4 size-5 text-muted-foreground"
-              strokeWidth={1.6}
-            />
-            <input
-              type="search"
-              aria-label="Search doctors by name"
+            <DoctorSearchInput
               aria-controls={showResults ? resultsId : undefined}
-              autoComplete="off"
-              value={search}
+              value={isDirectory ? (searchParams.get("search") ?? "") : search}
               onChange={(event) => {
-                setSearch(event.target.value);
-                setSearchOpen(true);
+                const value = event.target.value;
+                if (isDirectory) {
+                  setSearchParams(
+                    (previous) => {
+                      const next = new URLSearchParams(previous);
+                      if (value) next.set("search", value);
+                      else next.delete("search");
+                      return next;
+                    },
+                    { replace: true, preventScrollReset: true },
+                  );
+                } else {
+                  setSearch(value);
+                  setSearchOpen(true);
+                }
               }}
               onFocus={() => setSearchOpen(true)}
-              placeholder="Search doctors by name..."
-              className="h-12 w-full min-w-0 rounded-lg border border-transparent bg-background pr-4 pl-12 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-ring"
             />
             {showResults && (
               <div
@@ -182,38 +185,13 @@ export function Header() {
           </div>
 
           <div className="order-last w-full min-w-0 lg:order-none lg:w-auto lg:shrink-0">
-            <Select
-              value={selectedCity}
-              onValueChange={(value) => {
-                const city = locationOptions.find((item) => item === value);
-                if (city) setSelectedCity(city);
-              }}
-            >
-              <SelectTrigger
-                aria-label="Choose location"
-                className="min-h-11 w-full gap-3 border-border bg-card px-3 lg:w-48 xl:w-56"
-              >
-                <MapPin
-                  aria-hidden="true"
-                  className="size-5"
-                  strokeWidth={1.6}
-                />
-                <SelectValue>{selectedCity}</SelectValue>
-              </SelectTrigger>
-              <SelectContent alignItemWithTrigger={false}>
-                {locationOptions.map((city) => (
-                  <SelectItem key={city} value={city} className="min-h-11">
-                    {city}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <DoctorLocationFilter />
           </div>
         </>
       )}
 
       <div
-        className={`ml-auto flex shrink-0 items-center gap-2 lg:gap-4 ${isOverview ? "xl:pl-8" : "lg:rounded-xl lg:bg-card lg:p-4 lg:shadow-panel xl:pl-12"}`}
+        className={`ml-auto flex shrink-0 items-center gap-2 lg:gap-4 ${showDoctorFilters ? "xl:pl-8" : "lg:rounded-xl lg:bg-card lg:p-4 lg:shadow-panel xl:pl-12"}`}
       >
         <NotificationBell />
         <NavLink

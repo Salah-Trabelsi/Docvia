@@ -1,34 +1,22 @@
-import { Search } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import {
-  doctorAvailabilitySummaryKey,
-  getDoctorAvailabilitySummary,
-} from "@/api/doctors";
+import { Search, ChevronRight } from "lucide-react";
+import { Link } from "react-router";
 import type { Doctor, SpecialtyFilter } from "../types/doctor.types";
-import { DoctorCard } from "./DoctorCard";
+import { DoctorGrid } from "./DoctorGrid";
 import type { LocationSelection } from "@/stores/locationStore";
 
 interface PopularDoctorsProps {
   doctors: Doctor[];
   selectedSpecialty: SpecialtyFilter;
   selectedCity: LocationSelection;
-  onViewAll: () => void;
+  onResetSpecialty: () => void;
 }
 
 export function PopularDoctors({
   doctors,
   selectedSpecialty,
   selectedCity,
-  onViewAll,
+  onResetSpecialty,
 }: PopularDoctorsProps) {
-  const summary = useQuery({
-    queryKey: doctorAvailabilitySummaryKey,
-    queryFn: ({ signal }) => getDoctorAvailabilitySummary(signal),
-    staleTime: 30_000,
-    refetchInterval: 30_000,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: "always",
-  });
   const locationDescription =
     selectedCity === "All locations"
       ? "across all locations"
@@ -40,40 +28,19 @@ export function PopularDoctors({
         <h2 id="popular-doctors-heading" className="text-lg font-semibold">
           Popular Doctors
         </h2>
-        <button
-          type="button"
-          onClick={onViewAll}
-          disabled={selectedSpecialty === "All Specialties"}
-          title={
-            selectedSpecialty === "All Specialties"
-              ? "All available doctors are shown"
-              : "Show all specialties"
-          }
-          className="flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm text-brand-foreground hover:bg-accent disabled:cursor-default disabled:text-muted-foreground disabled:hover:bg-transparent"
-        ></button>
+        <Link
+          to="/doctors"
+          className="flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm text-brand-foreground hover:bg-accent"
+        >
+          View All <ChevronRight aria-hidden="true" className="size-4" />
+        </Link>
       </div>
       <p role="status" className="sr-only">
         {doctors.length} doctors shown {locationDescription} for{" "}
         {selectedSpecialty}.
       </p>
       {doctors.length > 0 ? (
-        <div className="grid grid-cols-1 gap-3 @min-[34rem]:grid-cols-2 @min-[48rem]:grid-cols-3">
-          {doctors.map((doctor) => {
-            const entry = summary.data?.find((item) =>
-              doctor.mongoId
-                ? item.doctorId === doctor.mongoId
-                : item.slug === (doctor.slug ?? doctor._id),
-            );
-            return (
-              <DoctorCard
-                key={doctor._id}
-                doctor={doctor}
-                nextAvailableDate={entry?.nextAvailableDate}
-                availabilityStatus={summary.status}
-              />
-            );
-          })}
-        </div>
+        <DoctorGrid doctors={doctors} />
       ) : (
         <div className="rounded-xl bg-card px-6 py-10 text-center shadow-card">
           <Search
@@ -89,7 +56,7 @@ export function PopularDoctors({
           {selectedSpecialty !== "All Specialties" && (
             <button
               type="button"
-              onClick={onViewAll}
+              onClick={onResetSpecialty}
               className="mt-4 min-h-11 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80"
             >
               Show all specialties {locationDescription}

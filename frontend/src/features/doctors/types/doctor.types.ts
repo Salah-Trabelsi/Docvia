@@ -5,6 +5,8 @@ export type Specialty =
   | "Pediatrics"
   | "Orthopedics"
   | "Gynecology"
+  | "ENT"
+  | "General Medicine"
   | "Ophthalmology"
   | "Psychiatry";
 

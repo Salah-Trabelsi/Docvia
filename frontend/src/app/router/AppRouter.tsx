@@ -2,6 +2,7 @@ import { createBrowserRouter, type RouteObject } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { DashboardLayout } from "@/app/layouts/DashboardLayout";
 import { OverviewPage } from "@/features/doctors/pages/OverviewPage";
+import { AllDoctorsPage } from "@/features/doctors/pages/AllDoctorsPage";
 import { AIAssistantPage } from "@/features/assistant/pages/AIAssistantPage";
 import { DoctorDetailsPage } from "@/features/doctors/pages/DoctorDetailsPage";
 import { MyAppointmentsPage } from "@/features/appointments/pages/MyAppointmentsPage";
@@ -25,6 +26,7 @@ const routes: RouteObject[] = [
         element: <DashboardLayout />,
         children: [
           { path: "/", element: <OverviewPage /> },
+          { path: "/doctors", element: <AllDoctorsPage /> },
           { path: "/assistant", element: <AIAssistantPage /> },
           { path: "/doctors/:doctorId", element: <DoctorDetailsPage /> },
           { path: "/appointments", element: <MyAppointmentsPage /> },

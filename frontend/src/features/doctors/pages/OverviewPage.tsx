@@ -11,7 +11,18 @@ import { DoctorsMap } from "../components/DoctorsMap";
 import { PopularDoctors } from "../components/PopularDoctors";
 import { SpecialtyFilters } from "../components/SpecialtyFilters";
 import { WelcomeBanner } from "../components/WelcomeBanner";
-import type { Doctor, SpecialtyFilter } from "../types/doctor.types";
+import type { SpecialtyFilter } from "../types/doctor.types";
+import { filterDoctors } from "../utils/filterDoctors";
+
+// Stable membership only: preserve the API's existing display order.
+const popularDoctorSlugs = new Set([
+  "ethan-roberts",
+  "daniel-wilson",
+  "michael-braun",
+  "olivia-martinez",
+  "laura-schmidt",
+  "maria-lucia",
+]);
 
 export function OverviewPage() {
   const selectedCity = useLocationStore((state) => state.selectedCity);
@@ -42,12 +53,13 @@ export function OverviewPage() {
     );
   }
 
-  const filteredDoctors = apiDoctors.filter(
-    (doctor: Doctor) =>
-      (selectedCity === "All locations" ||
-        doctor.practice.city === selectedCity) &&
-      (selectedSpecialty === "All Specialties" ||
-        doctor.specialty === selectedSpecialty),
+  const filteredDoctors = filterDoctors(
+    apiDoctors,
+    selectedCity,
+    selectedSpecialty,
+  );
+  const popularDoctors = filteredDoctors.filter((doctor) =>
+    popularDoctorSlugs.has(doctor.slug ?? doctor._id),
   );
 
   return (
@@ -60,10 +72,10 @@ export function OverviewPage() {
             onSelect={setSelectedSpecialty}
           />
           <PopularDoctors
-            doctors={filteredDoctors}
+            doctors={popularDoctors}
             selectedCity={selectedCity}
             selectedSpecialty={selectedSpecialty}
-            onViewAll={() => setSelectedSpecialty("All Specialties")}
+            onResetSpecialty={() => setSelectedSpecialty("All Specialties")}
           />
           <UpcomingAppointments />
         </div>

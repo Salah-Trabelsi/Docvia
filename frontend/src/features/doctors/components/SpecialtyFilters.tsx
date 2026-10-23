@@ -9,7 +9,12 @@ const mainSpecialties = [
   "Orthopedics",
   "Gynecology",
 ] as const;
-const additionalSpecialties = ["Ophthalmology", "Psychiatry"] as const;
+const additionalSpecialties = [
+  "ENT",
+  "General Medicine",
+  "Ophthalmology",
+  "Psychiatry",
+] as const;
 
 interface SpecialtyFiltersProps {
   selected: SpecialtyFilter;

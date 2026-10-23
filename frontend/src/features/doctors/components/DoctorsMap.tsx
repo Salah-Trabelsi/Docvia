@@ -147,7 +147,7 @@ export function DoctorsMap({ doctors }: { doctors: Doctor[] }) {
       button.setAttribute(
         "aria-label",
         group.length > 1
-          ? `${group.length} doctors at ${group[0].practice.name}, ${group[0].practice.city}`
+          ? `${group.length} doctors in ${group[0].practice.city}`
           : `View Dr. ${group[0].firstName} ${group[0].lastName} on map`,
       );
       button.setAttribute("aria-pressed", "false");
@@ -260,8 +260,7 @@ export function DoctorsMap({ doctors }: { doctors: Doctor[] }) {
             Doctors at this location
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {practiceDoctors[0].practice.name} &middot;{" "}
-            {practiceDoctors[0].practice.city}
+            Doctors in {practiceDoctors[0].practice.city}
           </p>
           <ul className="mt-3 space-y-1">
             {practiceDoctors.map((doctor) => (
